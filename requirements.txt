@@ -4,3 +4,4 @@ numpy
 yfinance
 tensorflow
 scikit-learn
+matplotlib
