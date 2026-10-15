@@ -153,7 +153,3 @@ if btn_run:
             ax2.set_title("Loss Train vs Validation")
             ax2.legend()
             st.pyplot(fig2)
-            future_dates = [df.index[-1] + datetime.timedelta(days=i) for i in range(1, so_ngay_du_bao + 1)]
-            ax.plot(future_dates, predictions, label="Giá dự báo", color='red', linestyle='--')
-            ax.legend()
-            st.pyplot(fig)
