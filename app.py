@@ -13,7 +13,6 @@ from tensorflow.keras.models import Sequential
 
 st.set_page_config(page_title="Dự báo giá cổ phiếu bằng LSTM", page_icon="📈", layout="wide")
 st.title("📈 Dự báo giá cổ phiếu bằng LSTM")
-st.caption("Mô hình thử nghiệm, chỉ mang tính học tập. Không phải khuyến nghị đầu tư.")
 
 WINDOW = 60  # số phiên nhìn lại
 
@@ -159,10 +158,6 @@ if job:
         st.stop()
 
     close = res["close"]
-    st.caption(
-        f"{job[0]} · dữ liệu đến {close.index[-1]:%d/%m/%Y} · giá đóng cửa gần nhất {close.iloc[-1]:,.0f} · "
-        f"đánh giá trên {res['n_test']} phiên cuối chưa dùng để huấn luyện"
-    )
 
     # 1) Chất lượng mô hình, so với baseline
     m, b = res["m_model"], res["m_naive"]
@@ -174,13 +169,6 @@ if job:
               f"{m['rmse'] - b['rmse']:+,.0f} so với baseline", delta_color="inverse")
     k3.metric("Đoán đúng hướng tăng/giảm", f"{res['dir_acc'] * 100:.1f}%",
               f"{(res['dir_acc'] - 0.5) * 100:+.1f} điểm so với tung đồng xu")
-    st.caption("Baseline = đoán giá mai bằng giá hôm nay. Đoán đúng hướng quanh 50% nghĩa là chưa hơn tung đồng xu.")
-
-    if m["mape"] < b["mape"] and res["dir_acc"] > 0.52:
-        st.success("Mô hình tốt hơn baseline trên tập test. Vẫn nên xem đây là tham khảo, không phải cam kết.")
-    else:
-        st.warning("Mô hình chưa vượt rõ rệt baseline “giá mai = giá hôm nay”. "
-                   "Hãy xem các dự báo bên dưới như một kịch bản tham khảo.")
 
     # 2) Dự đoán 1 ngày trên giai đoạn test
     k = 120
@@ -204,8 +192,6 @@ if job:
         "Thay đổi so với hôm nay": [f"{(v / last - 1) * 100:+.1f}%" for v in prices],
     }, index=dates.strftime("%d/%m/%Y"))
     st.dataframe(table, use_container_width=True)
-    st.caption("Vùng thấp/cao ước tính từ sai số của mô hình trên tập test. Dự báo nhiều ngày thường khá phẳng "
-               "vì lợi suất ngày mai rất khó đoán. Ngày giao dịch tính theo lịch Thứ 2 đến Thứ 6, chưa loại ngày lễ.")
 
     tail = close.iloc[-90:]
     fig2, ax2 = plt.subplots(figsize=(11, 4.5))
@@ -223,5 +209,3 @@ if job:
         ax3.set_xlabel("Epoch")
         ax3.legend()
         st.pyplot(fig3)
-        st.write(f"Đã chạy {res['epochs_run']} epoch (dừng sớm nếu validation loss không cải thiện). "
-                 f"Train loss có thể cao hơn validation loss vì Dropout chỉ bật khi huấn luyện.")
